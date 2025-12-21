@@ -1,0 +1,485 @@
+%% GRVC Beamer Theme (approximation of GRVC_presentation_2026.pptx)
+%\NeedsTeXFormat{LaTeX2e}
+%\ProvidesPackage{beamerthemeGRVC}[2025/12/20 GRVC Beamer theme]
+%
+%\RequirePackage{tikz}
+%\RequirePackage{graphicx}
+%\RequirePackage{xcolor}
+%\RequirePackage{iftex}
+%\RequirePackage{textcomp}
+%\RequirePackage{microtype}
+%
+%\graphicspath{{assets/}}
+%
+%
+%\mode<presentation>
+%
+%% ---------- Fonts ----------
+%\ifPDFTeX
+%  \RequirePackage[scaled=1.0]{helvet}
+%  \renewcommand{\familydefault}{\sfdefault}
+%\else
+%  \RequirePackage{fontspec}
+%  % Best-effort; if these fonts are unavailable, system fallback will apply.
+%  \setsansfont{Calibri}[Scale=MatchLowercase]
+%  \renewcommand{\familydefault}{\sfdefault}
+%\fi
+%
+%\AtBeginEnvironment{frame}{\small}
+%
+%% ---------- Colors ----------
+%\definecolor{GRVCBlue}{RGB}{31,71,123}      % primary bar / headings
+%\definecolor{GRVCLight}{RGB}{183,255,255}   % light accent
+%% \definecolor{GRVCLight}{RGB}{150,180,150}   % light accent
+%\definecolor{GRVCCyan}{RGB}{0,175,239}      % accent
+%\definecolor{GRVCGray}{RGB}{190,190,190}    % slide number
+%\definecolor{GRVCBlue_text}{RGB}{200,200,200}      % primary bar / headings
+%
+%\setbeamercolor{normal text}{fg=GRVCLight,bg=white}
+%\setbeamercolor{structure}{fg=GRVCLight}
+%\setbeamercolor{frametitle}{fg=GRVCLight,bg=GRVCBlue}
+%\setbeamercolor{title}{fg=GRVCLight}
+%\setbeamercolor{itemize item}{fg=GRVCLight}
+%\setbeamercolor{itemize subitem}{fg=GRVCLight}
+%
+%% ---------- Layout ----------
+%\setbeamersize{text margin left=0.08\paperwidth, text margin right=0.06\paperwidth}
+%\setbeamertemplate{navigation symbols}{}
+%
+%% ---------- Bullets ----------
+%\setbeamertemplate{itemize item}{\raise0.1ex\hbox{\scriptsize$\blacksquare$}}
+%\setbeamertemplate{itemize subitem}{\raise0.1ex\hbox{\scriptsize$\blacksquare$}}
+%
+%% ---------- Optional project logo (top-right) ----------
+%% Holds a graphic path. Empty means "no logo".
+%\newcommand{\GRVCempty}{}%
+%\let\GRVCprojectlogo\GRVCempty
+%\newcommand{\GRVCsetprojectlogo}[1]{\def\GRVCprojectlogo{#1}}
+%\newcommand{\GRVCclearprojectlogo}{\let\GRVCprojectlogo\GRVCempty}
+%
+%% ---------- Footline ----------
+%
+%
+%\newlength{\GRVCfootheight}
+%\setlength{\GRVCfootheight}{0.09\paperheight}
+%
+%\newlength{\GRVCfootYMid}
+%\newlength{\GRVCfootYLow}
+%\setlength{\GRVCfootYMid}{0.55\GRVCfootheight}
+%\setlength{\GRVCfootYLow}{0.15\GRVCfootheight}
+%
+%\setbeamertemplate{footline}{%
+%  \begin{tikzpicture}[remember picture,overlay]
+%    % Bar
+%    \fill[GRVCBlue] (current page.south west) rectangle ([yshift=\GRVCfootheight]current page.south east);
+%
+%    % Left: "g r v c" + swoosh
+%    \node[anchor=west] at ([xshift=0.03\paperwidth,yshift=\GRVCfootYMid]current page.south west)
+%      {{\color{GRVCLight}\bfseries\fontsize{8}{8}\selectfont {\color{white}{g}}\hspace{0.35em}r\hspace{0.35em}v\hspace{0.35em}c}};
+%    \node[anchor=west] at ([xshift=0.043\paperwidth,yshift=\GRVCfootYLow]current page.south west)
+%      {\includegraphics[height=0.30\GRVCfootheight]{assets/swoosh_light.png}};
+%
+%    % Right: slide number + USE seal (white)
+%    \node[anchor=east] at ([xshift=-0.07\paperwidth,yshift=\GRVCfootYMid]current page.south east)
+%      {{\color{GRVCGray}\fontsize{4}{4}\selectfont \insertframenumber}};
+%    \node[anchor=east] at ([xshift=-0.01\paperwidth,yshift=\GRVCfootYMid]current page.south east)
+%      {\includegraphics[height=0.78\GRVCfootheight]{assets/use_seal_white.png}};
+%  \end{tikzpicture}%
+%}
+%
+%% ---------- Frame title (with optional top-right logo) ----------
+%% \setbeamertemplate{frametitle}{%
+%%   \vspace*{0.05\paperheight}%
+%%   \begin{beamercolorbox}[wd=\paperwidth,ht=0.10\paperheight,dp=0.02\paperheight,leftskip=0.08\paperwidth,rightskip=0.06\paperwidth]{frametitle}%
+%%     {\bfseries\fontsize{15}{15}\selectfont \insertframetitle}%
+%%   \end{beamercolorbox}%
+%%   \begin{tikzpicture}[remember picture,overlay]
+%%     \ifx\GRVCprojectlogo\GRVCempty\else
+%%       \node[anchor=north east] at ([xshift=-0.07\paperwidth,yshift=-0.05\paperheight]current page.north east)
+%%         {\includegraphics[height=0.12\paperheight]{\GRVCprojectlogo}};
+%%     \fi
+%%   \end{tikzpicture}%
+%%   \vspace*{-0.03\paperheight}%
+%% }
+%% ---------- Frame title (with optional project logo on the left) ----------
+%\setbeamertemplate{frametitle}{%
+%  \vspace*{-0.01\paperheight}%
+%  \begin{beamercolorbox}[wd=\paperwidth,ht=0.065\paperheight,dp=0.035\paperheight,%
+%    leftskip=0.04\paperwidth,rightskip=0.03\paperwidth]{frametitle}%
+%    \ifx\GRVCprojectlogo\GRVCempty
+%      {\bfseries\fontsize{12}{12}\selectfont \insertframetitle}%
+%    \else
+%      \begin{minipage}[c]{0.1\linewidth}%
+%        \includegraphics[height=0.085\paperheight]{\GRVCprojectlogo}%
+%      \end{minipage}\hspace{0.02\linewidth}%
+%      \begin{minipage}[c]{0.9\linewidth}%
+%        {\bfseries\fontsize{12}{12}\selectfont \insertframetitle}%
+%      \end{minipage}%
+%    \fi
+%  \end{beamercolorbox}%
+%  \vspace*{-0.02\paperheight}%
+%}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ... your theme setup (colors, headline/footline, etc.) ...
+%% ------------------------------------------------------------
+%% Compact typography inside frames (ADD THIS NEAR THE END)
+%% ------------------------------------------------------------
+%\AtBeginEnvironment{frame}{\small} % or \footnotesize
+%
+%\setbeamerfont{block body}{size=\small}
+%\setbeamerfont{itemize/enumerate body}{size=\small}
+%\setbeamerfont{itemize/enumerate subbody}{size=\small}
+%
+%% (Optional) also scale block titles slightly
+%% \setbeamerfont{block title}{size=\small}
+%
+%\mode<all>
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+%% ---------- Title page ----------
+%% Reproduces the PPT title slide layout (16:9) as closely as possible.
+%
+%\newlength{\GRVCtitlebandheight}
+%\setlength{\GRVCtitlebandheight}{0.175\paperheight}
+%
+%% Simple letterspacing helper (best effort)
+%\newcommand{\GRVCtrack}[2][180]{%
+%  \ifcsname textls\endcsname
+%    \textls[#1]{#2}%
+%  \else
+%    #2%
+%  \fi
+%}
+%
+%\setbeamertemplate{title page}{%
+%  \begin{tikzpicture}[remember picture,overlay]
+%    % Bottom band
+%    \fill[GRVCBlue] (current page.south west) rectangle ([yshift=\GRVCtitlebandheight]current page.south east);
+%
+%    % --- Title (centered, two lines via \\ in \title) ---
+%    \node[anchor=center, align=center, text=GRVCBlue_text,
+%          font=\bfseries\fontsize{18}{22}\selectfont]%
+%      at ([xshift=0.50\paperwidth,yshift=0.689\paperheight]current page.south west)
+%      {\inserttitle};
+%
+%    % --- Author (right-aligned, mid-right) ---
+%    \node[anchor=east, align=right, text=GRVCBlue_text, font=\fontsize{12}{18}\selectfont]%
+%      at ([xshift=0.920\paperwidth,yshift=0.450\paperheight]current page.south west)
+%      {\insertauthor};
+%
+%    % --- Institute + Date (right-aligned, above band) ---
+%    \node[anchor=east, align=right, text=GRVCBlue_text, font=\fontsize{12}{18}\selectfont]%
+%      at ([xshift=0.920\paperwidth,yshift=0.326\paperheight]current page.south west)
+%      {\insertinstitute};
+%    \node[anchor=east, align=right, text=GRVCBlue_text, font=\fontsize{12}{18}\selectfont]%
+%      at ([xshift=0.920\paperwidth,yshift=0.4\paperheight]current page.south west)
+%      {\insertdate};
+%
+%    % --- GRVC logo (lower-left; overlaps into the blue band) ---
+%    \node[anchor=south west]%
+%      at ([xshift=0.042\paperwidth,yshift=0.10\paperheight]current page.south west)
+%      {\includegraphics[height=0.19\paperheight]{assets/grvc_logo.png}};
+%
+%    % --- "Robotics / Vision / Control" block ---
+%    \node[anchor=west, text=GRVCBlue, font=\bfseries\fontsize{6}{12}\selectfont]%
+%      at ([xshift=0.17\paperwidth,yshift=0.26\paperheight]current page.south west)
+%      {\GRVCtrack[200]{Robotics}};
+%    \node[anchor=west, text=GRVCBlue, font=\bfseries\fontsize{6}{12}\selectfont]%
+%      at ([xshift=0.17\paperwidth,yshift=0.20\paperheight]current page.south west)
+%      {\GRVCtrack[200]{Vision}};
+%    \node[anchor=west, text=white, font=\bfseries\fontsize{6}{12}\selectfont]%
+%      at ([xshift=0.170\paperwidth,yshift=0.140\paperheight]current page.south west)
+%      {\GRVCtrack[200]{Control}};
+%
+%    % --- Universidad de Sevilla (white, letterspaced) + seal ---
+%    \node[anchor=west, align=left, text=white, font=\fontsize{6}{12}\selectfont]%
+%      at ([xshift=0.75\paperwidth,yshift=0.1\paperheight]current page.south west)
+%      {U\hspace{0.34em}n\hspace{0.34em}i\hspace{0.34em}v\hspace{0.34em}e\hspace{0.34em}r\hspace{0.34em}s\hspace{0.34em}i\hspace{0.34em}d\hspace{0.34em}a\hspace{0.34em}d\\[0.25em]%
+%       d\hspace{0.34em}e\hspace{1.3em}S\hspace{0.37em}e\hspace{0.37em}v\hspace{0.37em}i\hspace{0.37em}l\hspace{0.37em}l\hspace{0.37em}a};
+%
+%    \node[anchor=east]%
+%      at ([xshift=0.990\paperwidth,yshift=0.091\paperheight]current page.south west)
+%      {\includegraphics[height=0.135\paperheight]{assets/use_seal_white.png}};
+%  \end{tikzpicture}%
+%}
+%% ---------- Helpers ----------
+%
+%% \newcommand{\GRVCsectionframe}[2][]{%
+%%   {%
+%%     \GRVCsetprojectlogo{#1}%
+%%     \begin{frame}[plain]
+%%       \vspace*{0.20\paperheight}
+%%       \begin{center}
+%%         {\bfseries\fontsize{12}{15}\selectfont \MakeUppercase{#2}}
+%%       \end{center}
+%%     \end{frame}
+%%     \GRVCclearprojectlogo%
+%%   }%
+%% }
+%
+%\newcommand{\GRVCsectionframe}[2][]{%
+%  {%
+%    \GRVCsetprojectlogo{#1}%
+%    \begin{frame}[plain]
+%      \begin{tikzpicture}[remember picture,overlay]
+%        \ifx\GRVCprojectlogo\GRVCempty\relax\else
+%          \node[anchor=north west] at ([xshift=0.08\paperwidth,yshift=-0.05\paperheight]current page.north west)
+%            {\includegraphics[height=0.18\paperheight]{\GRVCprojectlogo}};
+%        \fi
+%      \end{tikzpicture}
+%
+%      \vspace*{0.10\paperheight}
+%      \begin{center}
+%        {\bfseries\fontsize{12}{15}\selectfont \MakeUppercase{#2}}
+%      \end{center}
+%    \end{frame}
+%    \GRVCclearprojectlogo%
+%  }%
+%}
+
+
+% GRVC Beamer Theme (approximation of GRVC_presentation_2026.pptx)
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeGRVC}[2025/12/21 GRVC Beamer theme]
+
+\RequirePackage{tikz}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage{iftex}
+\RequirePackage{textcomp}
+\RequirePackage{microtype}
+
+\graphicspath{{assets/}}
+
+
+\mode<presentation>
+
+% ---------- Fonts ----------
+\ifPDFTeX
+\RequirePackage[scaled=1.0]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\else
+\RequirePackage{fontspec}
+% Best-effort; if these fonts are unavailable, system fallback will apply.
+\setsansfont{Calibri}[Scale=MatchLowercase]
+\renewcommand{\familydefault}{\sfdefault}
+\fi
+
+% ---------- Colors ----------
+\definecolor{GRVCBlue}{RGB}{31,71,123}      % primary bar / headings
+\definecolor{GRVCLight}{RGB}{183,255,255}   % light accent
+% \definecolor{GRVCLight}{RGB}{150,180,150}   % light accent
+\definecolor{GRVCCyan}{RGB}{0,175,239}      % accent
+\definecolor{GRVCGray}{RGB}{190,190,190}    % slide number
+\definecolor{GRVCBlue_text}{RGB}{200,200,200}      % primary bar / headings
+
+\setbeamercolor{normal text}{fg=GRVCLight,bg=white}
+\setbeamercolor{structure}{fg=GRVCLight}
+\setbeamercolor{frametitle}{fg=GRVCLight,bg=GRVCBlue}
+\setbeamercolor{title}{fg=GRVCLight}
+\setbeamercolor{itemize item}{fg=GRVCLight}
+\setbeamercolor{itemize subitem}{fg=GRVCLight}
+
+% ---------- Layout ----------
+\setbeamersize{text margin left=0.06\paperwidth, text margin right=0.04\paperwidth}
+\setbeamertemplate{navigation symbols}{}
+
+% ---------- Bullets ----------
+\setbeamertemplate{itemize item}{\raise0.1ex\hbox{\scriptsize$\blacksquare$}}
+\setbeamertemplate{itemize subitem}{\raise0.1ex\hbox{\scriptsize$\blacksquare$}}
+
+% ---------- Optional project logo (top-right) ----------
+% Holds a graphic path. Empty means "no logo".
+\newcommand{\GRVCempty}{}%
+\let\GRVCprojectlogo\GRVCempty
+\newcommand{\GRVCsetprojectlogo}[1]{\def\GRVCprojectlogo{#1}}
+\newcommand{\GRVCclearprojectlogo}{\let\GRVCprojectlogo\GRVCempty}
+
+% ---------- Footline ----------
+
+
+\newlength{\GRVCfootheight}
+\setlength{\GRVCfootheight}{0.07\paperheight}
+
+\newlength{\GRVCfootYMid}
+\newlength{\GRVCfootYLow}
+\setlength{\GRVCfootYMid}{0.55\GRVCfootheight}
+\setlength{\GRVCfootYLow}{0.15\GRVCfootheight}
+
+\setbeamertemplate{footline}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		% Bar
+		\fill[GRVCBlue] (current page.south west) rectangle ([yshift=\GRVCfootheight]current page.south east);
+		
+		% Left: "g r v c" + swoosh
+		\node[anchor=west] at ([xshift=0.03\paperwidth,yshift=\GRVCfootYMid]current page.south west)
+		{{\color{GRVCLight}\bfseries\fontsize{8}{8}\selectfont {\color{white}{g}}\hspace{0.35em}r\hspace{0.35em}v\hspace{0.35em}c}};
+		\node[anchor=west] at ([xshift=0.043\paperwidth,yshift=\GRVCfootYLow]current page.south west)
+		{\includegraphics[height=0.30\GRVCfootheight]{assets/swoosh_light.png}};
+		
+		% Right: slide number + USE seal (white)
+		\node[anchor=east] at ([xshift=-0.07\paperwidth,yshift=\GRVCfootYMid]current page.south east)
+		{{\color{GRVCGray}\fontsize{4}{4}\selectfont \insertframenumber}};
+		\node[anchor=east] at ([xshift=-0.01\paperwidth,yshift=\GRVCfootYMid]current page.south east)
+		{\includegraphics[height=0.78\GRVCfootheight]{assets/use_seal_white.png}};
+	\end{tikzpicture}%
+}
+
+% ---------- Frame title (with optional top-right logo) ----------
+% \setbeamertemplate{frametitle}{%
+	%   \vspace*{0.05\paperheight}%
+	%   \begin{beamercolorbox}[wd=\paperwidth,ht=0.10\paperheight,dp=0.02\paperheight,leftskip=0.08\paperwidth,rightskip=0.06\paperwidth]{frametitle}%
+		%     {\bfseries\fontsize{15}{15}\selectfont \insertframetitle}%
+		%   \end{beamercolorbox}%
+	%   \begin{tikzpicture}[remember picture,overlay]
+		%     \ifx\GRVCprojectlogo\GRVCempty\else
+		%       \node[anchor=north east] at ([xshift=-0.07\paperwidth,yshift=-0.05\paperheight]current page.north east)
+		%         {\includegraphics[height=0.12\paperheight]{\GRVCprojectlogo}};
+		%     \fi
+		%   \end{tikzpicture}%
+	%   \vspace*{-0.03\paperheight}%
+	% }
+% ---------- Frame title (with optional project logo on the left) ----------
+\setbeamertemplate{frametitle}{%
+	\vspace*{-0.01\paperheight}%
+	\begin{beamercolorbox}[wd=\paperwidth,ht=0.055\paperheight,dp=0.025\paperheight,%
+		leftskip=0.06\paperwidth,rightskip=0.04\paperwidth]{frametitle}%
+		\ifx\GRVCprojectlogo\GRVCempty
+		{\bfseries\fontsize{12}{12}\selectfont \insertframetitle}%
+		\else
+		\begin{minipage}[c]{0.1\linewidth}%
+			\includegraphics[height=0.072\paperheight]{\GRVCprojectlogo}%
+		\end{minipage}\hspace{0.02\linewidth}%
+		\begin{minipage}[c]{0.9\linewidth}%
+			{\bfseries\fontsize{12}{12}\selectfont \insertframetitle}%
+		\end{minipage}%
+		\fi
+	\end{beamercolorbox}%
+	\vspace*{-0.02\paperheight}%
+}
+
+
+
+% ---------- Compact typography (fits dense frames better) ----------
+% Reduce the default body text size inside frames (override per-frame with \normalsize if needed).
+\AtBeginEnvironment{frame}{\small} % or \footnotesize
+
+% Ensure common elements follow the reduced sizing consistently.
+\setbeamerfont{normal text}{size=\small}
+\setbeamerfont{block body}{size=\small}
+\setbeamerfont{itemize/enumerate body}{size=\small}
+\setbeamerfont{itemize/enumerate subbody}{size=\small}
+
+% Tighten list spacing globally (optional but helps prevent overflow).
+\setbeamertemplate{itemize/enumerate body begin}{%
+	\setlength{\itemsep}{0.15em}%
+	\setlength{\topsep}{0.15em}%
+	\setlength{\partopsep}{0pt}%
+	\setlength{\parskip}{0pt}%
+}
+
+% ---------- Title page ----------
+% Reproduces the PPT title slide layout (16:9) as closely as possible.
+
+\newlength{\GRVCtitlebandheight}
+\setlength{\GRVCtitlebandheight}{0.175\paperheight}
+
+% Simple letterspacing helper (best effort)
+\newcommand{\GRVCtrack}[2][180]{%
+	\ifcsname textls\endcsname
+	\textls[#1]{#2}%
+	\else
+	#2%
+	\fi
+}
+
+\setbeamertemplate{title page}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		% Bottom band
+		\fill[GRVCBlue] (current page.south west) rectangle ([yshift=\GRVCtitlebandheight]current page.south east);
+		
+		% --- Title (centered, two lines via \\ in \title) ---
+		\node[anchor=center, align=center, text=GRVCBlue_text,
+		font=\bfseries\fontsize{18}{22}\selectfont]%
+		at ([xshift=0.50\paperwidth,yshift=0.689\paperheight]current page.south west)
+		{\inserttitle};
+		
+		% --- Author (right-aligned, mid-right) ---
+		\node[anchor=east, align=right, text=GRVCBlue_text, font=\fontsize{12}{18}\selectfont]%
+		at ([xshift=0.920\paperwidth,yshift=0.450\paperheight]current page.south west)
+		{\insertauthor};
+		
+		% --- Institute + Date (right-aligned, above band) ---
+		\node[anchor=east, align=right, text=GRVCBlue_text, font=\fontsize{12}{18}\selectfont]%
+		at ([xshift=0.920\paperwidth,yshift=0.326\paperheight]current page.south west)
+		{\insertinstitute};
+		\node[anchor=east, align=right, text=GRVCBlue_text, font=\fontsize{12}{18}\selectfont]%
+		at ([xshift=0.920\paperwidth,yshift=0.4\paperheight]current page.south west)
+		{\insertdate};
+		
+		% --- GRVC logo (lower-left; overlaps into the blue band) ---
+		\node[anchor=south west]%
+		at ([xshift=0.042\paperwidth,yshift=0.10\paperheight]current page.south west)
+		{\includegraphics[height=0.19\paperheight]{assets/grvc_logo.png}};
+		
+		% --- "Robotics / Vision / Control" block ---
+		\node[anchor=west, text=GRVCBlue, font=\bfseries\fontsize{6}{12}\selectfont]%
+		at ([xshift=0.17\paperwidth,yshift=0.26\paperheight]current page.south west)
+		{\GRVCtrack[200]{Robotics}};
+		\node[anchor=west, text=GRVCBlue, font=\bfseries\fontsize{6}{12}\selectfont]%
+		at ([xshift=0.17\paperwidth,yshift=0.20\paperheight]current page.south west)
+		{\GRVCtrack[200]{Vision}};
+		\node[anchor=west, text=white, font=\bfseries\fontsize{6}{12}\selectfont]%
+		at ([xshift=0.170\paperwidth,yshift=0.140\paperheight]current page.south west)
+		{\GRVCtrack[200]{Control}};
+		
+		% --- Universidad de Sevilla (white, letterspaced) + seal ---
+		\node[anchor=west, align=left, text=white, font=\fontsize{6}{12}\selectfont]%
+		at ([xshift=0.75\paperwidth,yshift=0.1\paperheight]current page.south west)
+		{U\hspace{0.34em}n\hspace{0.34em}i\hspace{0.34em}v\hspace{0.34em}e\hspace{0.34em}r\hspace{0.34em}s\hspace{0.34em}i\hspace{0.34em}d\hspace{0.34em}a\hspace{0.34em}d\\[0.25em]%
+			d\hspace{0.34em}e\hspace{1.3em}S\hspace{0.37em}e\hspace{0.37em}v\hspace{0.37em}i\hspace{0.37em}l\hspace{0.37em}l\hspace{0.37em}a};
+		
+		\node[anchor=east]%
+		at ([xshift=0.990\paperwidth,yshift=0.091\paperheight]current page.south west)
+		{\includegraphics[height=0.135\paperheight]{assets/use_seal_white.png}};
+	\end{tikzpicture}%
+}
+% ---------- Helpers ----------
+
+% \newcommand{\GRVCsectionframe}[2][]{%
+	%   {%
+		%     \GRVCsetprojectlogo{#1}%
+		%     \begin{frame}[plain]
+			%       \vspace*{0.20\paperheight}
+			%       \begin{center}
+				%         {\bfseries\fontsize{12}{15}\selectfont \MakeUppercase{#2}}
+				%       \end{center}
+			%     \end{frame}
+		%     \GRVCclearprojectlogo%
+		%   }%
+	% }
+
+\newcommand{\GRVCsectionframe}[2][]{%
+	{%
+		\GRVCsetprojectlogo{#1}%
+		\begin{frame}[plain]
+			\begin{tikzpicture}[remember picture,overlay]
+				\ifx\GRVCprojectlogo\GRVCempty\relax\else
+				\node[anchor=north west] at ([xshift=0.08\paperwidth,yshift=-0.05\paperheight]current page.north west)
+				{\includegraphics[height=0.18\paperheight]{\GRVCprojectlogo}};
+				\fi
+			\end{tikzpicture}
+			
+			\vspace*{0.10\paperheight}
+			\begin{center}
+				{\bfseries\fontsize{12}{15}\selectfont \MakeUppercase{#2}}
+			\end{center}
+		\end{frame}
+		\GRVCclearprojectlogo%
+	}%
+}
+
+\mode<all>
+
