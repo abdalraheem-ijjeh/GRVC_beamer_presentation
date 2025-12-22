@@ -2,6 +2,65 @@
 
 \usetheme{GRVC}
 
+% --- Timeline styles/macro (works in presentation + handout) ---
+\usepackage{tikz}
+\usetikzlibrary{arrows,calc,positioning,shadows}
+\tikzset{>=stealth'}
+
+\definecolor{TLaxis}{RGB}{235,235,235}
+\definecolor{TLorange}{RGB}{241,120,0}
+\definecolor{TLblue}{RGB}{0,145,220}
+\definecolor{TLgreen}{RGB}{70,170,0}
+
+\tikzset{
+	tlAxis/.style={draw=TLaxis, line width=2.2pt, line cap=round},
+	tlMajorTick/.style={draw=TLaxis, line width=1.0pt},
+	tlMinorTick/.style={draw=TLaxis, line width=0.55pt},
+	tlMonth/.style={font=\scriptsize, text=TLaxis},
+	tlYear/.style={font=\bfseries\small, text=TLaxis},
+	tlConn/.style={densely dashed, line width=0.9pt},
+	tlBox/.style={
+		rounded corners=2pt,
+		align=left,
+		text=white,
+		font=\tiny,
+		inner xsep=6pt,
+		inner ysep=5pt,
+		fill opacity=0.92,
+		draw opacity=0.92,
+		line width=0.6pt,
+		drop shadow={opacity=0.25}
+	},
+	tlOrange/.style={tlBox, fill=TLorange, draw=TLorange},
+	tlBlue/.style={tlBox, fill=TLblue, draw=TLblue},
+	tlGreen/.style={tlBox, fill=TLgreen, draw=TLgreen},
+}
+
+\newcommand{\TLAbove}[5]{% x, y, boxstyle, color, text
+	\coordinate (TLp) at (#1,0);
+	\fill[#4] (TLp) circle (2.0pt);
+	\draw[#4, line width=0.8pt] (TLp) circle (2.9pt);
+	\node[#3] (TLb) at (#1,#2) {#5};
+	\path[fill=#4, draw=#4, line width=0.6pt]
+	($(TLb.south)+(-0.35,0)$) --
+	($(TLb.south)+( 0.35,0)$) --
+	($(TLb.south)+( 0,-0.33)$) -- cycle;
+	\draw[tlConn, color=#4] (TLp) -- ($(TLb.south)+(0,-0.33)$);
+}
+
+\newcommand{\TLBelow}[5]{% x, y, boxstyle, color, text
+	\coordinate (TLp) at (#1,0);
+	\fill[#4] (TLp) circle (2.0pt);
+	\draw[#4, line width=0.8pt] (TLp) circle (2.9pt);
+	\node[#3] (TLb) at (#1,#2) {#5};
+	\path[fill=#4, draw=#4, line width=0.6pt]
+	($(TLb.north)+(-0.35,0)$) --
+	($(TLb.north)+( 0.35,0)$) --
+	($(TLb.north)+( 0, 0.33)$) -- cycle;
+	\draw[tlConn, color=#4] (TLp) -- ($(TLb.north)+(0,0.33)$);
+}
+
+
 % Blocks
 \setbeamerfont{block title}{size=\normalsize, series=\bfseries}
 \setbeamerfont{block body}{size=\small}
@@ -198,7 +257,7 @@
 
 {
 \GRVCsetprojectlogo{assets/tema_logo.pdf}
-}
+
 
 % Clean background for technical content (better readability than a photo background)
 %\setbeamertemplate{background}{%
@@ -229,141 +288,109 @@
 %\end{frame}
 
 
-\begin{frame}[t]{Motivation and end-to-end workflow in TEMA}
-	
-	\footnotesize
-	\setlength{\itemsep}{0.2em}
-	\setlength{\topsep}{0.2em}
-	
-	\begin{block}{Why we need information fusion}
-		In an evolving disaster, decisions are time-critical and data are imperfect.
-		Sensors and models provide partial, asynchronous, and uncertain evidence.
-		The command centre needs a single, continuously updated operational picture.
-	\end{block}
-	
-	\vspace{0.4em}
-	
+\begin{frame}{Motivation: why we need information fusion}
 	\begin{columns}[T,onlytextwidth]
-		% -------- Left: text (two mini-columns) --------
-		\begin{column}{0.60\textwidth}
-			\begin{columns}[T,onlytextwidth]
-				\begin{column}{0.50\textwidth}
-					\textbf{Typical inputs}
-					\tiny
-					\begin{itemize}
-						\tiny
-						\setlength{\itemsep}{0.15em}
-						\setlength{\topsep}{0.1em}
-						\setlength{\parskip}{0pt}
-						\item UAV imagery (flood/fire segmentation; person/vehicle detection)
-						\item Satellite products (medium-resolution, large coverage)
-						\item Simulations (hydrodynamic depth, fire spread / arrival time)
-						\item Geosocial media analysis
-					\end{itemize}
-				\end{column}
-				
-				\begin{column}{0.50\textwidth}
-					\footnotesize
-					\textbf{Operational questions}					
-					\begin{itemize}
-						\tiny
-						\setlength{\itemsep}{0.15em}
-						\setlength{\topsep}{0.1em}
-						\setlength{\parskip}{0pt}
-						\item Where is the hazard now (and how confident are we)?
-						\item Where will it be next (and when)?
-						\item Where are people / vehicles at risk?
-						\item Which areas should drones revisit?
-					\end{itemize}
-				\end{column}
-			\end{columns}
-		\end{column}
-		
-		% -------- Right: figure --------
-		\begin{column}{0.40\textwidth}
-			\centering
-			\includegraphics[
-			width=\linewidth,
-			height=0.62\textheight,
-			keepaspectratio
-			]{enhanced_end_to_end_scheme.png}
-			
-			\vspace{0.2em}
-			{\scriptsize End-to-end workflow in TEMA.}
-		\end{column}
+		\column{0.58\textwidth}
+		\small
+		\begin{itemize}\itemsep0.5em
+			\item In disasters, the bottleneck is not data availability, but \textbf{coherence}.
+			\item UAV: detailed but local and intermittent.
+			\item Satellite: wide-area but delayed and sometimes uncertain.
+			\item Simulations: predictive but model-dependent.
+			\item Geo-social: fast but noisy and biased.
+		\end{itemize}
+		\vspace{0.4em}
+		\begin{block}{Goal}
+			Provide \textbf{one operational picture} that updates whenever new evidence arrives.
+		\end{block}
+		\column{0.40\textwidth}
+		\centering
+		\includegraphics[width=\linewidth,height=0.72\textheight,keepaspectratio]{enhanced_end_to_end_scheme.png}
 	\end{columns}
-	
 \end{frame}
 
+\begin{frame}{How PDM-tech-05 connects to other TEMA technologies}
+	\centering
+	\includegraphics[width=0.98\linewidth,height=0.80\textheight,keepaspectratio]{INTERACTION_DIAGRAM.png}
+\end{frame}
 
 \begin{frame}{Key challenges addressed by PDM-tech-05}
   \begin{itemize}
     \item \textbf{Heterogeneity:} mixing observations (UAV/satellite/geosocial) with model predictions
-    \item \textbf{Asynchrony:} data arrive at different times and rates; some regions are intermittently observed
+    \item \textbf{Asynchrony:} different refresh rates and latencies (seconds to hours).
     \item \textbf{Spatial mismatch:} different projections/resolutions \textrightarrow{} common reference grid
-    \item \textbf{Uncertainty:} probabilistic representation + numerically stable updates (log-odds)
-    \item \textbf{Scalability:} update only where data overlap AOI; event-driven processing
-    \item \textbf{Actionability:} expose products via APIs and a web app to decision-support tools
+    \item \textbf{Uncertainty:} every source is imperfect; disagreement is normal.
+%    \item \textbf{Scalability:} update only where data overlap AOI; event-driven processing
+    \item \textbf{Georeferencing:} UAV sensors + terrain $\Rightarrow$ spatial alignment is non-trivial.
+    \item \textbf{Dynamics:} evolving hazard fronts and moving objects $\Rightarrow$ temporal consistency matters.
+%    \item \textbf{Actionability:} expose products via APIs and a web app to decision-support tools
   \end{itemize}
 \end{frame}
 
 \begin{frame}{What the Information Fusion platform does}
-  \begin{columns}[T,onlytextwidth]
-    \column{0.56\textwidth}
-      \begin{block}{PDM-tech-05: generic fusion service for NDM}
-        \begin{itemize}
-          \item Select an Area of Interest (AOI) and a reference grid
-          \item Ingest multi-modal streams with timestamps and georeferencing metadata
-          \item Apply source-specific measurement/prediction models
-          \item Maintain a persistent probabilistic state (\textbf{OGM} + \textbf{OPM})
-          \item Serve updates to the Digital Enabler / SmartDesk and trigger workflows
-        \end{itemize}
-      \end{block}
-    \column{0.40\textwidth}
-      \begin{block}{Design principle}
-        \textbf{Convert everything into consistent probabilities on a common spatial reference, then fuse.}
-      \end{block}
-  \end{columns}
+	\begin{columns}[T,onlytextwidth]
+		\column{1.0\textwidth}
+		\begin{columns}[T,onlytextwidth]
+			\column{0.33\textwidth}
+			\tiny
+			\begin{block}{PDM-tech-05: multimodal fusion framework for NDM}
+				\begin{itemize}
+					\tiny
+					\item Select an Area of Interest (AOI) and a reference grid
+					\item Ingest NGSI-LD entities (measurements +
+					predictions) with timestamps and georeferencing metadata
+					\item Fuse evidence probabilistically (event-driven
+					updates).
+					\item Maintain a persistent probabilistic state (\textbf{OGM} + \textbf{OPM})
+					\item Publish updated products to the Digital Enabler / SmartDesk and trigger workflows
+				\end{itemize}
+			\end{block}
+			\column{0.65\textwidth}
+			\centering
+			\begin{block}{Web app deployment view}
+				\centering
+				\includegraphics[width=1.0\linewidth,height=0.750\textheight,keepaspectratio]{web_app_diagram.png}
+			\end{block}			
+		\end{columns}
+	\end{columns}
+  	\begin{block}{Design principle}
+  		\tiny
+  		\textbf{Same engine across hazards $\Rightarrow$ Convert everything into consistent probabilities on a common spatial reference, then fuse.}
+  	\end{block}
 \end{frame}
 
 \begin{frame}{Two primary outputs: OGM and OPM}
-  \begin{columns}[T,onlytextwidth]
-    \column{0.49\textwidth}
-      \begin{block}{1) Occupancy Grid Map (OGM)}
-        \begin{itemize}
-          \item Regular grid over AOI (e.g., 5 m cells)
-          \item Each cell stores a hazard probability:
-            \begin{itemize}
-              \item \textit{Maps4Flood:} flood probability
-              \item \textit{Maps4Fire:} fire/burnt probability
-            \end{itemize}
-          \item Updated asynchronously as new evidence arrives
-        \end{itemize}
-      \end{block}
-
-    \column{0.49\textwidth}
-      \begin{block}{2) Object Presence Map (OPM)}
-        \begin{itemize}
-          \item Tracks dynamic entities (persons / vehicles)
-          \item Geodetic state with uncertainty (Kalman filtering)
-          \item Data association (gating + Hungarian assignment)
-          \item Supports responder-centric risk awareness
-        \end{itemize}
-      \end{block}
-  \end{columns}
+	\small
+	\begin{columns}[T,onlytextwidth]
+		\column{0.48\textwidth}
+		\begin{block}{Output 1: Occupancy Grid Map (OGM)}
+			\begin{itemize}\itemsep0.35em
+				\item Discretize the AOI into grid cells.
+				\item Each cell stores a probability of occupancy:
+				\begin{itemize}\itemsep0.2em
+					\item \textbf{Flood OGM:} probability of water presence.
+					\item \textbf{Fire OGM:} probability of fire/smoke/burnt area presence.
+				\end{itemize}
+				\item Updated asynchronously as new measurement \& prediction arrives.
+			\end{itemize}
+		\end{block}
+		
+		\column{0.48\textwidth}
+		\begin{block}{Output 2: Object Presence Map (OPM)}
+			\begin{itemize}\itemsep0.35em
+				\item Tracks persons/vehicles in geodetic coordinates.
+				\item Data association (Hungarian) + state estimation (Kalman).
+				\item Produces stable trajectories and uncertainty..
+			\end{itemize}
+		\end{block}
+		
+		\vspace{0.4em}
+		\begin{block}{Operational view (web app)}
+			OGM + OPM are served as the evolving operational picture to the command center.
+		\end{block}
+	\end{columns}
 \end{frame}
 
-
-
-\begin{frame}{How PDM-tech-05 connects to other TEMA technologies}
-  \centering
-  \includegraphics[width=0.98\linewidth,height=0.80\textheight,keepaspectratio]{INTERACTION_DIAGRAM.png}
-\end{frame}
-
-\begin{frame}{Web app and services architecture (deployment view)}
-  \centering
-  \includegraphics[width=0.95\linewidth,height=0.750\textheight,keepaspectratio]{web_app_diagram.png}
-\end{frame}
 
 \begin{frame}{Core engine: asynchronous occupancy-grid mapping}
   \begin{columns}[T,onlytextwidth]
@@ -372,7 +399,7 @@
         \item Maintain a grid of \textbf{log-odds} values (numerically stable)
         \item \textbf{Correction (sensor fusion):} apply an update when a new measurement arrives
         \item \textbf{Prediction (model-based):} propagate using predictions when measurements are absent
-        \item Event-driven: each source triggers only the relevant update on overlapping cells
+        \item Asynchrony is handled naturally (no need to wait for all sources).
       \end{itemize}
     \column{0.43\textwidth}
       \centering
@@ -380,30 +407,62 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{OGM formalism: probability and log-odds}
-  \scriptsize
-  \begin{block}{Occupancy grid cell $m_i$ (hazard present vs. absent)}
-    Posterior occupancy probability after fusing measurements up to time $t$:
-    \[
-      p^t_i = P(m_i \mid z_{1:t}, x_{1:t}), \qquad
-      \ell^t_i = \log\frac{p^t_i}{1-p^t_i}.
-    \]
-    With a prior $p^0_i=P(m_i)$, the initial log-odds is
-    \[
-      \ell^0_i = \log\frac{p^0_i}{1-p^0_i}.
-    \]
-  \end{block}
-
-  \vspace{-0.8em}
-  \begin{block}{Update in log-odds space (Bayesian occupancy update)}
-    Each new, georeferenced measurement contributes an additive increment:
-    \[
-      \ell^{t}_i = \ell^{t-}_i + \delta\ell^{t}_{i,s}, \qquad
-      \delta\ell^{t}_{i,s} = \log\frac{p^{t}_{i,s}}{1-p^{t}_{i,s}},
-    \]
-    followed by the inverse logistic map $p^{t}_i = \sigma(\ell^{t}_i)=\bigl(1+e^{-\ell^{t}_i}\bigr)^{-1}$.
-  \end{block}
+\begin{frame}{OGM update: Bayesian log-odds fusion (asynchronous sources)}
+	\scriptsize
+	
+	\begin{block}{Occupancy grid cell $m_i$ (hazard present vs.\ absent)\\ Per-cell state}
+		\footnotesize
+		\vspace{0.6em}
+		Posterior occupancy probability after fusing measurements up to time $t$:
+		\[
+		p^t_i = P(m_i \mid z_{1:t}, x_{1:t}), \qquad
+		\ell^t_i = \log\frac{p^t_i}{1-p^t_i}, \qquad
+		\ell^0_i = \log\frac{p^0_i}{1-p^0_i}.
+		\]
+	\end{block}
+	
+	\vspace{-0.6em}
+	\begin{block}{Additive update (source $s$ arriving at time $t$)}
+		\footnotesize
+		Let $p^{t}_{i,s}\in(0,1)$ be the inverse-sensor-model output for cell $i$. Then:
+		\[
+		\ell^{t}_i = \ell^{t-}_i +
+		\left(\log\frac{p^{t}_{i,s}}{1-p^{t}_{i,s}} - \ell^0_i\right),
+		\qquad
+		p^{t}_i = \frac{1}{1+e^{-\ell^{t}_i}}.
+		\]
+	\end{block}
 \end{frame}
+
+
+%\begin{frame}{OGM formalism: probability and log-odds}
+%	\scriptsize
+%	\begin{block}{Occupancy grid cell $m_i$ (hazard present vs.\ absent)}
+%		\footnotesize
+%		Posterior occupancy probability after fusing measurements up to time $t$:
+%		\[
+%		p_i^{t}=P(m_i \mid z_{1:t},x_{1:t}),\qquad
+%		\ell_i^{t}=\log\frac{p_i^{t}}{1-p_i^{t}}.
+%		\]
+%		Prior:
+%		\[
+%		p_i^{0}=P(m_i),\qquad
+%		\ell_i^{0}=\log\frac{p_i^{0}}{1-p_i^{0}}.
+%		\]
+%	\end{block}
+%	
+%	\vspace{-0.6em}
+%	\begin{block}{Log-odds fusion update (conditionally independent sources)}
+%		\footnotesize
+%		For a new georeferenced measurement $z_t^s$ from source $s$:
+%		\[
+%		\ell_i^{t}
+%		=\ell_i^{t-}+\Bigl(\log\frac{P(m_i\mid z_t^s,x_t)}{1-P(m_i\mid z_t^s,x_t)}-\ell_i^{0}\Bigr),
+%		\]
+%		then recover probability via $p_i^{t}=\sigma(\ell_i^{t})=(1+e^{-\ell_i^{t}})^{-1}$.
+%	\end{block}
+%\end{frame}
+
 
 \begin{frame}{Fusion rule: measurements vs. predictions}
   \begin{columns}[T,onlytextwidth]
@@ -426,24 +485,37 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}{Flood measurement model: UAV flood segmentation (TFA-tech-06)}
-  \scriptsize
-  \begin{block}{Aggregation from high-resolution UAV raster to the OGM grid}
-    For cell $i$, let $K_i$ be the set of georeferenced UAV pixels inside $i$ and $n_i=|K_i|$.
-    The aggregated score is
-    \[
-      \bar{s}^{\text{uav}}_i=\frac{1}{n_i}\sum_{k\in K_i} s^{\text{uav}}_k \in [0,1].
-    \]
-    Map the score to a measurement probability
-    \[
-      p^{\text{uav}}_i = p^{\text{uav}}_{\min} + \bigl(p^{\text{uav}}_{\max}-p^{\text{uav}}_{\min}\bigr)\,\bar{s}^{\text{uav}}_i,
-      \qquad 0<p^{\text{uav}}_{\min}<p^{\text{uav}}_{\max}<1,
-    \]
-    then apply the additive log-odds update $\delta\ell^{t}_{i,\text{uav}}=\log\frac{p^{\text{uav}}_i}{1-p^{\text{uav}}_i}$.
-  \end{block}
+\begin{frame}{Flood measurement model: UAV flood segmentation}
+	\scriptsize
+	\begin{block}{Aggregation from high-resolution UAV raster to the OGM grid}
+		For cell $i$, let $K_i$ be the set of georeferenced UAV pixels inside $i$ and $n_i=|K_i|$.
+		\[
+		\bar{s}^{\text{uav}}_i=\frac{1}{n_i}\sum_{k\in K_i} s^{\text{uav}}_k \in [0,1].
+		\]
+		Map the score to a measurement probability (clamp to $(\varepsilon,1-\varepsilon)$):
+		\[
+		p^{\text{uav}}_i = p^{\text{uav}}_{\min} + \bigl(p^{\text{uav}}_{\max}-p^{\text{uav}}_{\min}\bigr)\,\bar{s}^{\text{uav}}_i,
+		\quad 0<p^{\text{uav}}_{\min}<p^{\text{uav}}_{\max}<1.
+		\]
+	\end{block}
+	
+	\vspace{-1.2em}
+	\begin{block}{Log-odds increment and update}
+		\footnotesize
+		\[
+		\delta\ell^{t}_{i,\text{uav}}=\log\frac{p^{\text{uav}}_i}{1-p^{\text{uav}}_i}-\ell_i^0,
+		\qquad
+		\ell^{t}_i=\ell^{t-}_i+\delta\ell^{t}_{i,\text{uav}}.
+		\]
+	\end{block}
+	\vspace{-1.5em}
+	\begin{block}{Notes}
+		$\;p^{uav}_{\min},p^{uav}_{\max}$ encode trust in the segmentation (avoid overconfidence).
+	\end{block}
 \end{frame}
 
-\begin{frame}{Flood measurement model: satellite flood extent (TFA-tech-08)}
+
+\begin{frame}{Flood measurement model: satellite flood extent}
   \scriptsize
   \begin{block}{Per-cell probability from a resampled satellite mask}
     Let $m^{\text{sat}}_i\in[0,1]$ be the resampled satellite mask value at cell $i$.
@@ -451,17 +523,19 @@
     \[
       p^{\text{sat}}_i = m^{\text{sat}}_i \in (0,1),
       \qquad
-      \delta\ell^{t}_{i,\text{sat}} = \log\frac{p^{\text{sat}}_i}{1-p^{\text{sat}}_i}.
+      \delta\ell^{t}_{i,\text{sat}} = \log\frac{p^{\text{sat}}_i}{1-p^{\text{sat}}_i},
+      \qquad
+      \ell^{t}_i=\ell^{t-}_i+\delta\ell^{t}_{i,\text{sat}}
     \]
     Cells outside the satellite swath (or invalid pixels) are not updated.
   \end{block}
-  \vspace{-0.4em}
-  \begin{block}{Implementation note}
+  \vspace{0.4em}
+  \begin{block}{Notes}
     Probabilities are clamped to $[\epsilon,1-\epsilon]$ (e.g., $\epsilon\approx 10^{-6}$) to avoid infinite log-odds.
   \end{block}
 \end{frame}
 
-\begin{frame}{Flood measurement model: geosocial hotspots (TFA-tech-11)}
+\begin{frame}{Flood measurement model: geosocial hotspots}
   \scriptsize
   \begin{block}{From counts/ratios to measurement probability}
     Let $\tilde{c}_t(i)$ and $\tilde{r}_t(i)$ be normalized post count and activity ratio, and $w_c+w_r=1$.
@@ -473,11 +547,13 @@
     \[
       p^{\text{soc}}_t(i)=\epsilon + (1-2\epsilon)\,s^{\text{soc}}_t(i),
       \qquad
-      \delta\ell^{t}_{i,\text{soc}} = \log\frac{p^{\text{soc}}_t(i)}{1-p^{\text{soc}}_t(i)}.
+      \delta\ell^{t}_{i,\text{soc}} = \log\frac{p^{\text{soc}}_t(i)}{1-p^{\text{soc}}_t(i)},
+      \qquad
+      \ell^{t}_i=\ell^{t-}_i+\delta\ell^{t}_{i,\text{soc}}
     \]
   \end{block}
   \vspace{-0.4em}
-  \begin{block}{Interpretation}
+  \begin{block}{Notes}
     Geosocial evidence is informative but noisy; weights are typically conservative compared to physical sources.
   \end{block}
 \end{frame}
@@ -499,7 +575,7 @@
       \qquad
       p^{\text{new}}_i=\sigma(\ell^{\text{new}}_i).
     \]
-  \end{block}
+  \end{block}  
 \end{frame}
 
 \begin{frame}{Fusing predictive outputs in a generic way}
@@ -519,14 +595,13 @@
   \end{block}
   \vspace{-0.6em}
   \begin{block}{How it enters the OGM}
-    Use the same update interface as observations: convert $p^{\text{pred}}_i$ to log-odds and fuse
-    (typically via logit pooling to reflect its ``prior-like'' role).
+    Use the same update interface as observations: convert $p^{\text{pred}}_i$ to log-odds and fuse; ; the same mechanism applies to floods and wildfires.
   \end{block}
 \end{frame}
 
-\begin{frame}{Extending beyond floods: fire occupancy (Maps4Fire)}
+\begin{frame}{Extending beyond floods: fire occupancy grid map}
   \scriptsize
-  \begin{block}{Fire-related measurements (examples)}
+  \begin{block}{Fire-related measurements}
     \begin{itemize}
       \item UAV: \textit{FireSegmentation} and \textit{BurntSegmentation} (TFA-tech-06)
       \item Satellite: \textit{EOBurntArea} (TFA-tech-09)
@@ -546,63 +621,193 @@
 
 \begin{frame}{OPM: state, motion model, and asynchronous updates}
   \scriptsize
-  \begin{block}{Geodetic state for each tracked object $k$}
+  {Geodetic state for each tracked object $k$ maintains a 6D state (geodetic position + velocity)}
     \[
       \mathbf{x}_{t,k}=\bigl[\lambda_{t,k}\;\;\phi_{t,k}\;\;h_{t,k}\;\;\dot{\lambda}_{t,k}\;\;\dot{\phi}_{t,k}\;\;\dot{h}_{t,k}\bigr]^{\top}.
-    \]
-  \end{block}
+    \] 
   \vspace{-0.6em}
-  \begin{block}{Constant-velocity prediction (discrete time)}
+  {Constant-velocity prediction transition:}    
     \[
-      \hat{\mathbf{x}}_{t|t-1,k}=A_t\,\hat{\mathbf{x}}_{t-1|t-1,k},
-      \qquad
-      P_{t|t-1,k}=A_t\,P_{t-1|t-1,k}\,A_t^{\top}+R_t.
+    x_{t+1,k}=A x_{t,k} + w_t,\quad
+    A=\begin{bmatrix}
+    	1&0&0&\Delta t&0&0\\
+    	0&1&0&0&\Delta t&0\\
+    	0&0&1&0&0&\Delta t\\
+    	0&0&0&1&0&0\\
+    	0&0&0&0&1&0\\
+    	0&0&0&0&0&1
+    \end{bmatrix}
     \]
-  \end{block}
-  \vspace{-0.6em}
-  \begin{block}{Rationale}
-    Tracks persist even when detections are intermittent; uncertainty grows during prediction-only periods.
-  \end{block}
+    {Prediction step:}
+   	\[
+   	\hat{x}_{t|t-1,k}=A\hat{x}_{t-1|t-1,k},\qquad
+   	P_{t|t-1,k}=AP_{t-1|t-1,k}A^\top+Q
+   	\]   	     
+%  \vspace{-0.6em}
+%  \begin{block}{Rationale}
+%    Tracks persist even when detections are intermittent; uncertainty grows during prediction-only periods.
+%  \end{block}
 \end{frame}
 
-\begin{frame}{OPM: correction and data association}  
-  \begin{columns}[T,onlytextwidth]
-    \column{0.52\textwidth}
-    \tiny
-      \begin{block}{Kalman correction (when detection $z_{t,j}$ is assigned)}
-        \[
-          S_{t,j,k}=H P_{t|t-1,k}H^{\top}+R_{t,j},
-          \quad
-          K_{t,j,k}=P_{t|t-1,k}H^{\top}S^{-1}_{t,j,k},
-        \]
-        \[
-          \hat{\mathbf{x}}_{t|t,k}=\hat{\mathbf{x}}_{t|t-1,k}
-          +K_{t,j,k}\bigl(z_{t,j}-H\hat{\mathbf{x}}_{t|t-1,k}\bigr),
-          \quad
-          P_{t|t,k}=(I-K_{t,j,k}H)P_{t|t-1,k}.
-        \]
-      \end{block}
-
-    \column{0.46\textwidth}
-      \begin{block}{Association: gating + Hungarian}
-        \begin{itemize}
-          \item Gate candidates by geodetic distance (e.g., haversine) within $r_{\text{gate}}$
-          \item Solve a minimum-cost assignment with cost
-            \[
-              C_{k,j}=\alpha\,\frac{d_{\text{hav}}(\hat{p}_{t|t-1,k},p_{t,j})}{r_{\text{gate}}}
-              +\beta\,(1-c^{\text{det}}_{t,j}).
-            \]
-        \end{itemize}
-      \end{block}
-  \end{columns}
+\begin{frame}{OPM data association: gating and Hungarian assignment}
+	\scriptsize
+	\setlength{\abovedisplayskip}{2pt}
+	\setlength{\belowdisplayskip}{2pt}
+	
+	For detection $j$ at position $p_{t,j}$ and predicted track position $\hat{p}_{t|t-1,k}$:
+	\[
+	d_{k,j}=d_{hav}(\hat{p}_{t|t-1,k},p_{t,j})
+	\]
+	
+	Cost matrix for assignment:
+	\[
+	C_{k,j}=\alpha\,\frac{d_{k,j}}{r_{gate}}+\beta\,(1-c^{det}_{t,j})
+	\]
+	
+	\begin{block}{Association}
+		Apply gating ($d_{k,j}<r_{gate}$) then solve the assignment with the Hungarian algorithm.
+	\end{block}
 \end{frame}
+
+\begin{frame}{OPM state correction: confidence-aware Kalman update}
+	\scriptsize
+	\setlength{\abovedisplayskip}{2pt}
+	\setlength{\belowdisplayskip}{2pt}
+	
+	Measurement model (position):
+	\[
+	z_{t,j}=H x_{t,k}+v_t,\quad
+	H=\begin{bmatrix}1&0&0&0&0&0\\0&1&0&0&0&0\\0&0&1&0&0&0\end{bmatrix}
+	\]
+	
+	Confidence-aware measurement noise:
+	\[
+	R_{t,j}=\frac{1}{\max(c^{det}_{t,j},\varepsilon_c)}\,R_{base}
+	\]
+	
+	Kalman update:
+	\[
+	S=HPH^\top+R,\quad K=PH^\top S^{-1},\quad
+	\hat{x}_{t|t}=\hat{x}_{t|t-1}+K(z-H\hat{x}_{t|t-1})
+	\]
+\end{frame}
+
+% ------------------------------------------------------------
+% Information Fusion (PDM-tech-05) — University of Seville (USE)
+% Case Study
+% ------------------------------------------------------------
+\GRVCsectionframe[assets/tema\_logo.png]{Historical and real-time trials}
+
+{
+	\GRVCsetprojectlogo{assets/tema_logo.pdf}
+
+
+\begin{frame}<1-10>[t]{Trials timeline}
+	\centering
+	\vspace{-0.3em}
+	\begin{tikzpicture}[x=0.36cm,y=0.80cm] % y scaled down to avoid clipping
+		
+		% Axis: start at Jun 2024 (x=-3), end at May 2027 (x=32)
+		\draw[tlAxis] (-3,0) -- (32,0);
+		
+		% Minor monthly ticks
+		\foreach \x in {-3,-2,...,32} {
+			\draw[tlMinorTick] (\x,0.10) -- (\x,-0.10);
+		}
+		
+		% Major ticks + month labels (jun added at -3; then sep/jan/may cadence)
+		\foreach \x/\m in {-3/jun, 0/sep, 4/jan, 8/may, 12/sep, 16/jan, 20/may, 24/sep, 28/jan, 32/may} {
+			\draw[tlMajorTick] (\x,0.16) -- (\x,-0.16);
+			\node[tlMonth, above=2pt] at (\x,0.16) {\m};
+		}
+		
+		% Year labels at January ticks
+		\node[tlYear, below=7pt] at (4,0) {2025};
+		\node[tlYear, below=7pt] at (16,0) {2026};
+		\node[tlYear, below=7pt] at (28,0) {2027};
+		
+		% ---- Events (overlay animation) ----
+		
+		% June 2024 (new event) -> x = -3
+		\only<1->{\TLBelow{-3}{-2.0}{tlOrange}{TLorange}{
+				\textbf{Integration test}\\
+				ENG\\
+				Naples, Italy
+		}}
+		
+		% Mar 2025 -> x = 6
+		\only<2->{\TLAbove{6}{2.6}{tlOrange}{TLorange}{
+				\textbf{Integration test}\\
+				DLR-KN\\
+				Munich, Germany
+		}}
+		
+		% May 2025 -> x = 8
+		\only<3->{\TLBelow{8}{-2.7}{tlBlue}{TLblue}{
+				\textbf{Historical trial (Fire)}\\
+				KAHY\\
+				Kajaani, Finland
+		}}
+		
+		% Jun 2025 -> x = 9
+		\only<4->{\TLAbove{9}{1.4}{tlGreen}{TLgreen}{
+				\textbf{Real-time experiment (Fire)}\\
+				RAS\\
+				Sardinia, Italy
+		}}
+		
+		% Oct 2025 -> x = 13
+		\only<5->{\TLBelow{13}{-1.4}{tlBlue}{TLblue}{
+				\textbf{Historical trial (Floods)}\\
+				D.MALIAN\\
+				Mantoudi, Greece
+		}}
+		
+		% Nov 2025 -> x = 14
+		\only<6->{\TLAbove{14}{2.6}{tlBlue}{TLblue}{
+				\textbf{Historical trial (Floods)}\\
+				BRK\\
+				Ahrtal region, Germany
+		}}
+		
+		% Mar 2026 -> x = 18
+		\only<7->{\TLBelow{18}{-2.7}{tlBlue}{TLblue}{
+				\textbf{Historical trial (Fire)}\\
+				RAS\\
+				Sardinia, Italy
+		}}
+		
+		% Jun 2026 -> x = 21
+		\only<8->{\TLAbove{21}{1.5}{tlGreen}{TLgreen}{
+				\textbf{Real-time experiment (Fire)}\\
+				KAHY\\
+				Kajaani, Finland
+		}}
+		
+		% Sep 2026 -> x = 24
+		\only<9->{\TLBelow{24}{-1.6}{tlGreen}{TLgreen}{
+				\textbf{Real-time experiment (Floods)}\\
+				BRK\\
+				Ahrtal region, Germany
+		}}
+		
+		% Oct 2026 -> x = 25
+		\only<10->{\TLAbove{25}{2.6}{tlGreen}{TLgreen}{
+				\textbf{Real-time experiment (Floods)}\\
+				D.MALIAN\\
+				Mantoudi, Greece
+		}}
+		
+	\end{tikzpicture}
+\end{frame}
+
+\GRVCsectionframe[assets/tema\_logo.png]{Case Study: Historical Ahrtal floods, Germany}
 
 \begin{frame}{Case study focus: floods (Ahrtal) as a demonstrator}
   \begin{block}{Why a flood case study?}
     The platform is hazard-agnostic, but floods provide a clear demonstration of fusing
     predictions (hydrodynamics) with heterogeneous observations (UAV, satellite, geosocial).
   \end{block}
-
   \vspace{-0.2em}
   \begin{itemize}
     \item AOI defined as a polygon; OGM grid initialised with $p_i=0.5$ (unknown)
@@ -627,64 +832,7 @@
   \end{itemize}
 \end{frame}
 
-
-
-
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
-
-\begin{frame}{Frame Title}
-    
-\end{frame}
+\GRVCclearprojectlogo
+} 
 
 \end{document}
