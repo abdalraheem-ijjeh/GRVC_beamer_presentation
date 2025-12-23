@@ -113,6 +113,20 @@
 
 {
 \GRVCsetprojectlogo{assets/tema_logo.pdf}
+
+% ============================================================
+% Roadmap (fixes pacing and expectations)
+% ============================================================
+\begin{frame}{Roadmap}
+	\small
+	\begin{enumerate}\itemsep0.5em
+		\item TEMA context: partners and technologies (USE scope)
+		\item PDM-tech-05: Information Fusion platform (problem \textrightarrow{} approach \textrightarrow{} outputs)
+		\item Fusion methods: OGM (hazard occupancy) and OPM (multi-object tracking)
+		\item Flood case study (Ahrtal): inputs, fusion evolution, outputs and lessons learned
+	\end{enumerate}
+\end{frame}
+
 \begin{frame}{TEMA in a Nutshell}
   \begin{columns}[T,onlytextwidth]
     % ---------------- Left column: Partners ----------------
@@ -309,22 +323,56 @@
 	\end{columns}
 \end{frame}
 
+\begin{frame}{Key challenges addressed by PDM-tech-05}
+	\begin{itemize}
+		\item \textbf{Heterogeneity:} mixing observations (UAV/satellite/geosocial) with model predictions
+		\item \textbf{Asynchrony:} different refresh rates and latencies (seconds to hours).
+		\item \textbf{Spatial mismatch:} different projections/resolutions \textrightarrow{} common reference grid
+		\item \textbf{Uncertainty:} every source is imperfect; disagreement is normal.
+		%    \item \textbf{Scalability:} update only where data overlap AOI; event-driven processing
+		\item \textbf{Georeferencing:} UAV sensors + terrain $\Rightarrow$ spatial alignment is non-trivial.
+		\item \textbf{Dynamics:} evolving hazard fronts and moving objects $\Rightarrow$ temporal consistency matters.
+		%    \item \textbf{Actionability:} expose products via APIs and a web app to decision-support tools
+	\end{itemize}
+\end{frame}
+
 \begin{frame}{How PDM-tech-05 connects to other TEMA technologies}
 	\centering
 	\includegraphics[width=0.98\linewidth,height=0.80\textheight,keepaspectratio]{INTERACTION_DIAGRAM.png}
 \end{frame}
 
-\begin{frame}{Key challenges addressed by PDM-tech-05}
-  \begin{itemize}
-    \item \textbf{Heterogeneity:} mixing observations (UAV/satellite/geosocial) with model predictions
-    \item \textbf{Asynchrony:} different refresh rates and latencies (seconds to hours).
-    \item \textbf{Spatial mismatch:} different projections/resolutions \textrightarrow{} common reference grid
-    \item \textbf{Uncertainty:} every source is imperfect; disagreement is normal.
-%    \item \textbf{Scalability:} update only where data overlap AOI; event-driven processing
-    \item \textbf{Georeferencing:} UAV sensors + terrain $\Rightarrow$ spatial alignment is non-trivial.
-    \item \textbf{Dynamics:} evolving hazard fronts and moving objects $\Rightarrow$ temporal consistency matters.
-%    \item \textbf{Actionability:} expose products via APIs and a web app to decision-support tools
-  \end{itemize}
+
+
+\begin{frame}{Two primary outputs: OGM and OPM}
+	\small
+	\begin{columns}[T,onlytextwidth]
+		\column{0.48\textwidth}
+		\begin{block}{Output 1: Occupancy Grid Map (OGM)}
+			\begin{itemize}\itemsep0.35em
+				\item Discretize the AOI into grid cells.
+				\item Each cell stores a probability of occupancy:
+				\begin{itemize}\itemsep0.2em
+					\item \textbf{Flood OGM:} probability of water presence.
+					\item \textbf{Fire OGM:} probability of fire/smoke/burnt area presence.
+				\end{itemize}
+				\item Updated asynchronously as new measurement \& prediction arrives.
+			\end{itemize}
+		\end{block}
+		
+		\column{0.48\textwidth}
+		\begin{block}{Output 2: Object Presence Map (OPM)}
+			\begin{itemize}\itemsep0.35em
+				\item Tracks persons/vehicles in geodetic coordinates.
+				\item Data association (Hungarian) + state estimation (Kalman).
+				\item Produces stable trajectories and uncertainty..
+			\end{itemize}
+		\end{block}
+		
+		\vspace{0.4em}
+		\begin{block}{Operational view (web app)}
+			OGM + OPM are served as the evolving operational picture to the command center.
+		\end{block}
+	\end{columns}
 \end{frame}
 
 \begin{frame}{What the Information Fusion platform does}
@@ -359,80 +407,89 @@
   	\end{block}
 \end{frame}
 
-\begin{frame}{Two primary outputs: OGM and OPM}
-	\small
-	\begin{columns}[T,onlytextwidth]
-		\column{0.48\textwidth}
-		\begin{block}{Output 1: Occupancy Grid Map (OGM)}
-			\begin{itemize}\itemsep0.35em
-				\item Discretize the AOI into grid cells.
-				\item Each cell stores a probability of occupancy:
-				\begin{itemize}\itemsep0.2em
-					\item \textbf{Flood OGM:} probability of water presence.
-					\item \textbf{Fire OGM:} probability of fire/smoke/burnt area presence.
-				\end{itemize}
-				\item Updated asynchronously as new measurement \& prediction arrives.
-			\end{itemize}
-		\end{block}
-		
-		\column{0.48\textwidth}
-		\begin{block}{Output 2: Object Presence Map (OPM)}
-			\begin{itemize}\itemsep0.35em
-				\item Tracks persons/vehicles in geodetic coordinates.
-				\item Data association (Hungarian) + state estimation (Kalman).
-				\item Produces stable trajectories and uncertainty..
-			\end{itemize}
-		\end{block}
-		
-		\vspace{0.4em}
-		\begin{block}{Operational view (web app)}
-			OGM + OPM are served as the evolving operational picture to the command center.
-		\end{block}
-	\end{columns}
-\end{frame}
+
 
 
 \begin{frame}{Core engine: asynchronous occupancy-grid mapping}
   \begin{columns}[T,onlytextwidth]
-    \column{0.55\textwidth}
+    \column{0.46\textwidth}
       \begin{itemize}
         \item Maintain a grid of \textbf{log-odds} values (numerically stable)
         \item \textbf{Correction (sensor fusion):} apply an update when a new measurement arrives
         \item \textbf{Prediction (model-based):} propagate using predictions when measurements are absent
         \item Asynchrony is handled naturally (no need to wait for all sources).
       \end{itemize}
-    \column{0.43\textwidth}
+    \column{0.52\textwidth}
       \centering
       \includegraphics[width=\linewidth,height=0.66\textheight,keepaspectratio]{asyncapproach.png}
   \end{columns}
 \end{frame}
 
-\begin{frame}{OGM update: Bayesian log-odds fusion (asynchronous sources)}
+% ============================================================
+% OGM equations (consistent log-odds formalism)
+% ============================================================
+\begin{frame}{OGM formalism: probability and log-odds}
 	\scriptsize
+	\setlength{\abovedisplayskip}{2pt}
+	\setlength{\belowdisplayskip}{2pt}
 	
-	\begin{block}{Occupancy grid cell $m_i$ (hazard present vs.\ absent)\\ Per-cell state}
-		\footnotesize
-		\vspace{0.6em}
-		Posterior occupancy probability after fusing measurements up to time $t$:
-		\[
-		p^t_i = P(m_i \mid z_{1:t}, x_{1:t}), \qquad
-		\ell^t_i = \log\frac{p^t_i}{1-p^t_i}, \qquad
-		\ell^0_i = \log\frac{p^0_i}{1-p^0_i}.
-		\]
-	\end{block}
+	Discretize the AOI into cells $m_i$ and maintain an occupancy probability $p_t(i)=P(m_i \text{ occupied at time } t)$.
+	\vspace{0.35em}
 	
-	\vspace{-0.6em}
-	\begin{block}{Additive update (source $s$ arriving at time $t$)}
-		\footnotesize
-		Let $p^{t}_{i,s}\in(0,1)$ be the inverse-sensor-model output for cell $i$. Then:
-		\[
-		\ell^{t}_i = \ell^{t-}_i +
-		\left(\log\frac{p^{t}_{i,s}}{1-p^{t}_{i,s}} - \ell^0_i\right),
-		\qquad
-		p^{t}_i = \frac{1}{1+e^{-\ell^{t}_i}}.
-		\]
+	\begin{align*}
+		\ell_t(i) &= \log \frac{p_t(i)}{1-p_t(i)} \qquad\text{(log-odds)}\\
+		p_t(i) &= \sigma(\ell_t(i))=\frac{1}{1+e^{-\ell_t(i)}} \qquad\text{(logistic)}\\
+		\ell_0(i) &= \log \frac{P(m_i)}{1-P(m_i)} \qquad\text{(prior; }P(m_i)=0.5\text{, so }\ell_0(i)=0\text{)}
+	\end{align*}
+	
+	\begin{block}{Why log-odds?}
+		Numerical stability and additive updates across asynchronous sources.
 	\end{block}
 \end{frame}
+
+\begin{frame}{OGM fusion rule: Bayesian update in log-odds}
+	\scriptsize
+	\setlength{\abovedisplayskip}{2pt}
+	\setlength{\belowdisplayskip}{2pt}
+	
+	For an incoming observation $z_t$ (from any source) and platform state $x_t$:
+	\begin{align*}
+		\ell_t(i)
+		&= \ell_{t^-}(i) + \underbrace{\logit\!\big(P(m_i \mid z_t,x_t)\big)}_{\text{source evidence}} - \ell_0(i)
+	\end{align*}
+	
+	\begin{block}{Interpretation}
+		Each source produces a per-cell occupancy probability; we convert it to a log-odds increment and add it to the current map (subtracting the prior once to avoid double counting). In practice, we initialize $p_0(i)=0.5$ inside the AOI ($\ell_0(i)=0$), so the prior term vanishes; we keep $-\ell_0(i)$ to remain valid for non-uniform priors.
+	\end{block}
+\end{frame}
+
+
+%\begin{frame}{OGM update: Bayesian log-odds fusion (asynchronous sources)}
+%	\scriptsize
+%	
+%	\begin{block}{Occupancy grid cell $m_i$ (hazard present vs.\ absent)\\ Per-cell state}
+%		\footnotesize
+%		\vspace{0.6em}
+%		Posterior occupancy probability after fusing measurements up to time $t$:
+%		\[
+%		p^t_i = P(m_i \mid z_{1:t}, x_{1:t}), \qquad
+%		\ell^t_i = \log\frac{p^t_i}{1-p^t_i}, \qquad
+%		\ell^0_i = \log\frac{p^0_i}{1-p^0_i}.
+%		\]
+%	\end{block}
+%	
+%	\vspace{-0.6em}
+%	\begin{block}{Additive update (source $s$ arriving at time $t$)}
+%		\footnotesize
+%		Let $p^{t}_{i,s}\in(0,1)$ be the inverse-sensor-model output for cell $i$. Then:
+%		\[
+%		\ell^{t}_i = \ell^{t-}_i +
+%		\left(\log\frac{p^{t}_{i,s}}{1-p^{t}_{i,s}} - \ell^0_i\right),
+%		\qquad
+%		p^{t}_i = \frac{1}{1+e^{-\ell^{t}_i}}.
+%		\]
+%	\end{block}
+%\end{frame}
 
 
 %\begin{frame}{OGM formalism: probability and log-odds}
@@ -466,16 +523,16 @@
 
 \begin{frame}{Fusion rule: measurements vs. predictions}
   \begin{columns}[T,onlytextwidth]
-    \column{0.54\textwidth}
-      \begin{block}{Observational sources (UAV / satellite / geosocial)}
+    \column{0.49\textwidth}
+      \begin{block}{\textbf{Measurements} (UAV/satellite/geo-social) update the current OGM via inverse sensor models.}
         \begin{itemize}
           \item Convert raw outputs into a per-cell probability $p^{t}_{i,s}\in(0,1)$
           \item Add a log-odds increment $\delta\ell^{t}_{i,s} = \log\frac{p^{t}_{i,s}}{1-p^{t}_{i,s}}$
           \item Intuition: \textbf{high-confidence observations dominate locally}
         \end{itemize}
       \end{block}
-    \column{0.42\textwidth}
-      \begin{block}{Predictive sources (models)}
+    \column{0.49\textwidth}
+      \begin{block}{{Predictions} (e.g., hydrodynamics, fire simulation)}
         \begin{itemize}
           \item Predictions provide \textbf{structured early evidence} over large areas
           \item Fuse with the current OGM via \textbf{logit pooling} (weighted combination in log-odds space)
@@ -523,7 +580,7 @@
     \[
       p^{\text{sat}}_i = m^{\text{sat}}_i \in (0,1),
       \qquad
-      \delta\ell^{t}_{i,\text{sat}} = \log\frac{p^{\text{sat}}_i}{1-p^{\text{sat}}_i},
+      \delta\ell^{t}_{i,\text{sat}} = \log\frac{p^{\text{sat}}_i}{1-p^{\text{sat}}_i} -\ell_i^0,
       \qquad
       \ell^{t}_i=\ell^{t-}_i+\delta\ell^{t}_{i,\text{sat}}
     \]
@@ -547,7 +604,7 @@
     \[
       p^{\text{soc}}_t(i)=\epsilon + (1-2\epsilon)\,s^{\text{soc}}_t(i),
       \qquad
-      \delta\ell^{t}_{i,\text{soc}} = \log\frac{p^{\text{soc}}_t(i)}{1-p^{\text{soc}}_t(i)},
+      \delta\ell^{t}_{i,\text{soc}} = \log\frac{p^{\text{soc}}_t(i)}{1-p^{\text{soc}}_t(i)}-\ell_i^0,
       \qquad
       \ell^{t}_i=\ell^{t-}_i+\delta\ell^{t}_{i,\text{soc}}
     \]
@@ -560,46 +617,45 @@
 
 \begin{frame}{Flood prediction fusion: hydrodynamic depth (PDM-tech-02 / 3Di)}
   \scriptsize
-  \begin{block}{Depth-to-probability mapping (soft evidence)}
-    For a predicted water depth $h_i\ge 0$, define
-    \[
-      p^{\text{hyd}}_i=\epsilon+(1-2\epsilon)\,\frac{1}{1+\exp\!\bigl(-(h_i-h_{50})/s\bigr)}.
-    \]
-  \end{block}
-  \vspace{-0.6em}
-  \begin{block}{Logit pooling with the current map state}
-    Convert to log-odds $\ell^{\text{ogm}}_i=\log\frac{p^{\text{ogm}}_i}{1-p^{\text{ogm}}_i}$ and
-    $\ell^{\text{hyd}}_i=\log\frac{p^{\text{hyd}}_i}{1-p^{\text{hyd}}_i}$, then fuse:
-    \[
-      \ell^{\text{new}}_i=(1-\alpha_{\text{hyd}})\,\ell^{\text{ogm}}_i + \alpha_{\text{hyd}}\,\ell^{\text{hyd}}_i,
-      \qquad
-      p^{\text{new}}_i=\sigma(\ell^{\text{new}}_i).
-    \]
-  \end{block}  
+  \begin{block}{Depth-to-probability mapping}
+    Convert predicted water depth $h_i$ into occupancy probability via a logistic mapping:
+    \begin{align*}
+    	p^{hyd}_i &= \varepsilon + (1-2\varepsilon)\,\frac{1}{1+\exp\left(-\frac{h_i-h_{50}}{s}\right)} \\
+    	\ell^{hyd}_i &= \log(\frac{p^{hyd}_i}{1-p^{hyd}_i}) -\ell_i^0
+    \end{align*}
+    \end{block}      
+    \textbf{Logit pooling (weighted fusion in log-odds space):}
+    \begin{align*}
+    	\ell^{new}_i &= (1-\alpha_{hyd})\,\ell^{ogm}_i + \alpha_{hyd}\,\ell^{hyd}_i, \qquad p^{new}_i=\sigma(\ell^{new}_i)
+    \end{align*}
+    
+    \begin{block}{Notes}
+    	$\alpha_{hyd}\in[0,1]$ controls reliance on prediction vs.\ accumulated evidence.
+    \end{block}
 \end{frame}
 
-\begin{frame}{Fusing predictive outputs in a generic way}
-  \scriptsize
-  \begin{block}{Prediction as probabilistic evidence (example: fire arrival / flood simulation)}
-    For cell $i$, represent prediction as a pair of probabilities (hazard / no hazard):
-    \[
-      p^{\text{pred}}_i
-      = \frac{w_f\,p_f(i) + w_{nf}\,p_{nf}(i)}{w_f+w_{nf}},
-      \qquad w_f,w_{nf}>0.
-    \]
-    \vspace{-0.5em}
-    \begin{itemize}
-      \item \textbf{Flood:} $p_f(i)$ from model-derived inundation probability; $p_{nf}(i)=1-p_f(i)$.
-      \item \textbf{Fire:} $p_f(i)$ from arrival-time evidence (e.g., within a forecast horizon); $p_{nf}(i)=1-p_f(i)$.
-    \end{itemize}
-  \end{block}
-  \vspace{-0.6em}
-  \begin{block}{How it enters the OGM}
-    Use the same update interface as observations: convert $p^{\text{pred}}_i$ to log-odds and fuse; ; the same mechanism applies to floods and wildfires.
-  \end{block}
-\end{frame}
+%\begin{frame}{Fusing predictive outputs in a generic way}
+%  \scriptsize
+%  \begin{block}{Prediction as probabilistic evidence (example: fire arrival / flood simulation)}
+%    For cell $i$, represent prediction as a pair of probabilities (hazard / no hazard):
+%    \[
+%      p^{\text{pred}}_i
+%      = \frac{w_f\,p_f(i) + w_{nf}\,p_{nf}(i)}{w_f+w_{nf}},
+%      \qquad w_f,w_{nf}>0.
+%    \]
+%    \vspace{-0.5em}
+%    \begin{itemize}
+%      \item \textbf{Flood:} $p_f(i)$ from model-derived inundation probability; $p_{nf}(i)=1-p_f(i)$.
+%      \item \textbf{Fire:} $p_f(i)$ from arrival-time evidence (e.g., within a forecast horizon); $p_{nf}(i)=1-p_f(i)$.
+%    \end{itemize}
+%  \end{block}
+%  \vspace{-0.6em}
+%  \begin{block}{How it enters the OGM}
+%    Use the same update interface as observations: convert $p^{\text{pred}}_i$ to log-odds and fuse; ; the same mechanism applies to floods and wildfires.
+%  \end{block}
+%\end{frame}
 
-\begin{frame}{Extending beyond floods: fire occupancy grid map}
+\begin{frame}{Extending beyond floods: fire occupancy (Maps4Fire)}
   \scriptsize
   \begin{block}{Fire-related measurements}
     \begin{itemize}
@@ -801,38 +857,412 @@
 	\end{tikzpicture}
 \end{frame}
 
-\GRVCsectionframe[assets/tema\_logo.png]{Case Study: Historical Ahrtal floods, Germany}
+\GRVCsectionframe[assets/tema\_logo.png]{CASE STUDY: AHRTAL FLOODS, Germany}
 
-\begin{frame}{Case study focus: floods (Ahrtal) as a demonstrator}
-  \begin{block}{Why a flood case study?}
-    The platform is hazard-agnostic, but floods provide a clear demonstration of fusing
-    predictions (hydrodynamics) with heterogeneous observations (UAV, satellite, geosocial).
-  \end{block}
-  \vspace{-0.2em}
-  \begin{itemize}
-    \item AOI defined as a polygon; OGM grid initialised with $p_i=0.5$ (unknown)
-    \item Sources fused asynchronously upon arrival:
-      \begin{itemize}
-        \item 3Di depth predictions \textrightarrow{} soft prior via logit pooling
-        \item UAV flood segmentation \textrightarrow{} high-resolution local corrections
-        \item Satellite flood extent \textrightarrow{} broader-area observational updates
-        \item Geosocial hotspots \textrightarrow{} human-centric weak evidence
-      \end{itemize}
-    \item Outputs delivered to decision-support tools: OGM (flood status) + OPM (persons/vehicles)
-  \end{itemize}
+%\begin{frame}{Case study focus: floods (Ahrtal) as a demonstrator}
+%  \begin{block}{Why a flood case study?}
+%    The platform is hazard-agnostic, but floods provide a clear demonstration of fusing
+%    predictions (hydrodynamics) with heterogeneous observations (UAV, satellite, geosocial).
+%  \end{block}
+%  \vspace{-0.2em}
+%  \begin{itemize}
+%    \item AOI defined as a polygon; OGM grid initialised with $p_i=0.5$ (unknown)
+%    \item Sources fused asynchronously upon arrival:
+%      \begin{itemize}
+%        \item 3Di depth predictions \textrightarrow{} soft prior via logit pooling
+%        \item UAV flood segmentation \textrightarrow{} high-resolution local corrections
+%        \item Satellite flood extent \textrightarrow{} broader-area observational updates
+%        \item Geosocial hotspots \textrightarrow{} human-centric weak evidence
+%      \end{itemize}
+%    \item Outputs delivered to decision-support tools: OGM (flood status) + OPM (persons/vehicles)
+%  \end{itemize}
+%\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Case study setup: AOI and common grid}
+	\begin{columns}[T,onlytextwidth]
+		\column{0.55\textwidth}
+		\small
+		\begin{itemize}\itemsep0.55em
+			\item AOI defined as a polygon; discretized into an OGM grid.
+			\item Initialization: $p_0(i)=0.5$ (maximum uncertainty) inside AOI.
+			\item Asynchronous fusion as sources arrive: 3Di prediction, UAV segmentation, satellite extent, geo-social hotspots.
+			\item Objective: progressively refine the flood probability map (FPM).
+		\end{itemize}
+		\column{0.43\textwidth}
+		\centering
+		\includegraphics[width=\linewidth,height=0.75\textheight,keepaspectratio]{assets/aoi_satellite_with_bw_colorbar.png}
+	\end{columns}
 \end{frame}
 
+
+\begin{frame}{What gets fused in the OGM (inputs + roles)}
+	\small
+	\begin{block}{Evidence roles (hazard-agnostic pattern)}
+		\begin{itemize}\itemsep0.35em
+			\item \textbf{Hydrodynamics}: early spatial structure (physics-informed), but predictive uncertainty.
+			\item \textbf{Satellite}: wide-area observational correction (coarser + time offsets).
+			\item \textbf{UAV segmentation}: local, high-resolution refinement on demand (small footprint, high fidelity).
+			\item \textbf{Geosocial}: additive human-centric confirmation; may be spatially coarse.
+		\end{itemize}
+	\end{block}
+	
+	\begin{block}{Key takeaway}
+		OGM/FPM integrates all sources on a common grid using probabilistic updates; it does not treat any source as ground truth.
+	\end{block}
+\end{frame}
+
+\begin{frame}{3Di prediction: depth $\rightarrow$ flood probability prior}
+	\begin{columns}[T,onlytextwidth]
+		\column{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{assets/3di_depth.png}
+		\vspace{0.3em}
+		\scriptsize Predicted water depth (3Di)
+		\column{0.48\textwidth}
+		\centering
+		\includegraphics[width=\linewidth,height=0.65\textheight,keepaspectratio]{assets/3di_probability.png}
+		\vspace{0.3em}
+		\scriptsize Mapped flood probability $p^{hyd}_i$
+	\end{columns}
+	\vspace{-0.2em}
+	\footnotesize
+	\begin{itemize}\itemsep0.25em
+		\item Prediction is fused conservatively (logit pooling) to avoid over-committing early.
+		\item Sets the initial large-scale structure before high-resolution observations arrive.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{UAV flood segmentation: image $\rightarrow$ mask $\rightarrow$ georeferenced evidence}
+	\centering
+	% --- Top row: three-stage visual narrative ---
+	\includegraphics[width=0.32\linewidth,height=0.30\textheight,keepaspectratio]{assets/uav_captured_img.jpg}\hfill
+	\includegraphics[width=0.32\linewidth,height=0.30\textheight,keepaspectratio]{assets/Flood_DJI_20211023131552_0001_Z_A.jpg}\hfill
+	\includegraphics[width=0.32\linewidth,height=0.30\textheight,keepaspectratio]{assets/uav_geotiff_on_satellite.jpg}
+	
+	\vspace{0.35em}
+	\begin{columns}[T,onlytextwidth]
+		\column{0.56\textwidth}
+		\small
+		\begin{itemize}\itemsep0.4em
+			\item UAV RGB imagery segmented into flood / non-flood.
+			\item Mask is \textbf{georeferenced} onto the AOI (pose + DEM).
+			\item Produces local, high-resolution observational evidence to correct the map.
+		\end{itemize}
+		\column{0.42\textwidth}
+		\centering
+		\includegraphics[width=\linewidth,height=0.40\textheight,keepaspectratio]{assets/uav_segmentation.png}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Satellite flood extent: wide-area observational update}
+	\begin{columns}[T,onlytextwidth]
+		\begin{column}{0.38\textwidth}
+			\small
+			\begin{itemize}\itemsep0.4em
+				\item Satellite surface-water extent product (probabilistic raster).
+				\item Reprojected + resampled to the \textbf{5 m FPM grid}.
+				\item Broad coverage complements UAV footprint; corrects regional mismatches.
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.60\textwidth}
+			\includegraphics[width=\linewidth,height=0.66\textheight,keepaspectratio]{assets/satellite_aoi.png}		
+		\end{column}
+	\end{columns}
+\end{frame}
+
+%\begin{frame}{UAV flood segmentation}
+%	\centering	
+%	% ---------- Top row: 3 images ----------
+%	\begin{minipage}[t]{0.32\linewidth}
+%		\centering
+%		\includegraphics[height=0.26\textheight,keepaspectratio]{assets/uav_captured_img.jpg}
+%	\end{minipage}\hfill
+%	\begin{minipage}[t]{0.32\linewidth}
+%		\centering
+%		\includegraphics[height=0.26\textheight,keepaspectratio]{assets/Flood_DJI_20211023131552_0001_Z_A.jpg}
+%	\end{minipage}\hfill
+%	\begin{minipage}[t]{0.32\linewidth}
+%		\centering
+%		\includegraphics[height=0.26\textheight,keepaspectratio]{assets/uav_geotiff_on_satellite.jpg}
+%	\end{minipage}
+%	
+%	\vspace{0.5em}
+%	
+%	% ---------- Bottom: text + 4th image ----------
+%	\begin{columns}[T,onlytextwidth]
+%		\begin{column}{0.75\textwidth}
+%			\small
+%			\begin{itemize}\itemsep0.35em
+%				\item UAV RGB imagery segmented into flood / non-flood.
+%				\item Mask is \textbf{georeferenced} onto the AOI (DEM + pose).
+%				\item Produces local, high-resolution observational evidence.
+%			\end{itemize}
+%		\end{column}
+%		\begin{column}{0.22\textwidth}
+%		\end{column}
+%	\end{columns}
+%\end{frame}
+%
+%
+%\begin{frame}{UAV evidence on the map: local probabilities}
+%	\begin{columns}[T,onlytextwidth]
+%		\begin{column}{0.49\textwidth}
+%			\small
+%			\begin{itemize}\itemsep0.4em
+%				\item UAV flood segmentation converted to per-cell likelihoods.
+%				\item Interpreted as \textbf{local flood probabilities} on the FPM grid.
+%				\item Key role: \textbf{boundary sharpening} and local corrections.
+%			\end{itemize}
+%		\end{column}
+%		\begin{column}{0.49\textwidth}
+%			\centering
+%			\includegraphics[height=0.5\textheight,keepaspectratio]{assets/uav_segmentation.png}
+%		\end{column}
+%	\end{columns}
+%\end{frame}
+
+\begin{frame}{Geosocial hotspots: human-centric evidence (and limitations)}
+	\begin{columns}[T,onlytextwidth]
+		\begin{column}{0.45\textwidth}
+			\small
+			\begin{itemize}\itemsep0.4em
+				\item Posts aggregated into hotspot cells (counts, activity, stats).
+				\item Converted into a measurement likelihood $p^{soc}_t(i)$.
+				\item Ahrtal limitation: AOI falls in a \textbf{single hotspot cell} $\Rightarrow$ coarse spatial signal.
+			\end{itemize}
+		\end{column}
+		
+		\begin{column}{0.52\textwidth}
+			\centering
+			\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{assets/geosocial_raw.png}\par
+			\vspace{0.5em}
+			\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]{assets/geosocial_pm.png}
+		\end{column}
+	\end{columns}
+\end{frame}
+
+
+\begin{frame}{Qualitative evolution: the FPM sharpens as evidence arrives}
+	\centering
+	\setlength{\tabcolsep}{3pt}
+	\renewcommand{\arraystretch}{1.0}
+	\begin{tabular}{cc}
+		\includegraphics[width=0.48\linewidth,height=0.33\textheight,keepaspectratio]{assets/fpm_after_3di_greys_inset.png} &
+		\includegraphics[width=0.48\linewidth,height=0.33\textheight,keepaspectratio]{assets/fpm_before_geosocial_zoom_cells.png} \\
+		\includegraphics[width=0.48\linewidth,height=0.33\textheight,keepaspectratio]{assets/fpm_after_geosocial_zoom_cells.png} &
+		\includegraphics[width=0.48\linewidth,height=0.33\textheight,keepaspectratio]{assets/final_fpm_multimodal_fusion.png}
+	\end{tabular}	
+%	\vspace{0.35em}
+%	\footnotesize
+%	\vspace{0.4em}
+	\footnotesize
+	\begin{itemize}\itemsep0.2em
+		\footnotesize
+		\item Predictions provide early structure; observations refine boundaries and correct local mismatches.
+		\item Geosocial contribution is deliberately moderate but visible in the inset.
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Quantitative evolution: uncertainty reduction and change detection}
+	\begin{columns}[T,onlytextwidth]
+		\column{0.54\textwidth}
+		\small
+		\begin{itemize}\itemsep0.6em
+			\item Track the entropy of the flood probability map (FPM) to quantify confidence gains.
+			\item Use map-to-map changes ($\Delta$) to detect when new evidence meaningfully updates the picture.
+			\item In Ahrtal, the strongest corrections coincide with UAV and satellite arrivals.
+		\end{itemize}
+		\column{0.44\textwidth}
+		\centering
+		\includegraphics[width=\linewidth,height=0.75\textheight,keepaspectratio]{assets/fpm_entropy_delta.png}
+	\end{columns}
+\end{frame}
+
+%\begin{frame}{Temporal behavior: responsiveness + stability}
+%	\begin{columns}[T,onlytextwidth]
+%		\begin{column}{0.42\textwidth}
+%			\small
+%			\begin{itemize}\itemsep0.4em
+%				\item Metrics computed over published FPMs (5-min intervals).
+%				\item $\Delta(t)$ spikes when strong evidence arrives, then $\rightarrow 0$ (convergence).
+%				\item $H(t)$ decreases as uncertainty reduces.
+%			\end{itemize}
+%		\end{column}
+%		\begin{column}{0.58\textwidth}
+%			\centering
+%			% fpm_entropy_delta.png
+%			\includegraphics[width=0.80\textheight,keepaspectratio]{assets/fpm_entropy_delta.png}
+%		\end{column}
+%	\end{columns}
+%\end{frame}
+
+
+%\begin{frame}{Cross-modality consistency (internal agreement with final FPM)}
+%	\small
+%	\begin{block}{Why this metric?}
+%		Dense external ground truth is limited; we quantify how the fused FPM aligns with each modality on its support.
+%	\end{block}
+%	
+%	\vspace{-0.2em}
+%	\centering
+%	\footnotesize
+%	\begin{tabular}{lrrr}
+%		\hline
+%		Source $s$ & $|I_s|$ [cells] & $D_s$ & $A_s$ [\%] \\
+%		\hline
+%		UAV segmentation          & 326    & 0.05 & 97 \\
+%		Satellite SWIM product    & 58{,}789 & 0.12 & 90 \\
+%		Hydrodynamic (3Di)        & 58{,}789 & 0.18 & 85 \\
+%		Geosocial hotspots        & 58{,}789 & 0.35 & 52 \\
+%		\hline
+%	\end{tabular}
+%	
+%	\vspace{0.6em}
+%	\small
+%	\begin{itemize}\itemsep0.3em
+%		\item UAV aligns best (high local fidelity on its footprint).
+%		\item Satellite moderate (observational but coarser / time offset).
+%		\item Hydrodynamics lower (predictive uncertainty).
+%		\item Geosocial lowest (coarse spatial support in Ahrtal).
+%	\end{itemize}
+%\end{frame}
+
+
+\begin{frame}{OPM setup: detections $\rightarrow$ georeferenced observations $\rightarrow$ tracker}
+	\small
+	\begin{itemize}\itemsep0.45em
+		\item UAV person/vehicle detections are georeferenced to $(\lambda,\phi,h)$ with confidence.
+		\item Multi-object mode: \textbf{gating + Hungarian assignment} for association.
+		\item State estimation: \textbf{6D geodetic Kalman filter} (prediction-only during detection gaps).
+		\item Discontinuity rule: reject updates when prediction--measurement discrepancy exceeds \textbf{$r_{\mathrm{FPM}}=5$ m} (aligned with OGM resolution).
+	\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Tracking under missed detections: gaps and continuity}
+	\begin{columns}[T,onlytextwidth]
+		\begin{column}{0.45\textwidth}
+			\centering
+			\includegraphics[width=0.80\textheight,keepaspectratio]{assets/measurement_availability.png}
+		\end{column}
+		\begin{column}{0.50\textwidth}
+			\includegraphics[width=0.80\textheight,keepaspectratio]{assets/4_longitude_over_time.png}
+		\end{column}
+	\end{columns}
+	
+	\vspace{0.4em}
+	\small
+	\begin{itemize}\itemsep0.25em
+		\item During gaps: prediction-only propagation; filtered state remains continuous.
+		\item When detections return: correction pulls the trajectory back toward measurements.
+	\end{itemize}
+\end{frame}
+
+%\begin{frame}{Tracking diagnostics: longitude/latitude/altitude over time}
+%	\begin{columns}[T,onlytextwidth]
+%		\begin{column}{0.42\textwidth}
+%			\small
+%			\begin{itemize}\itemsep0.4em
+%				\item Filtered estimate is smooth yet responsive.
+%				\item During measurement gaps: filtered $\approx$ prediction.
+%				\item Altitude remains nearly constant (plausible pedestrian motion + terrain).
+%			\end{itemize}
+%		\end{column}
+%		\begin{column}{0.58\textwidth}
+%			\centering
+%			% Fig.16 is on page 27 (middle-lower). Crop to the three small plots region.
+%			\paperfig{27}{\linewidth}{1.0cm 7.2cm 1.0cm 8.6cm}
+%			\vspace{-0.5em}
+%			{\scriptsize Fig. 16: Longitude, latitude, altitude over 30 frames.}
+%		\end{column}
+%	\end{columns}
+%\end{frame}
+
+
+%\begin{frame}{Consistency diagnostics: residuals bounded by map resolution}
+%	\begin{columns}[T,onlytextwidth]
+%		\begin{column}{0.45\textwidth}
+%			\small
+%			\begin{itemize}\itemsep0.4em
+%				\item Prediction--measurement distance and innovation magnitude stay within bounds.
+%				\item Reset threshold corresponds to \textbf{$r_{\mathrm{FPM}}=5$ m}.
+%				\item Prevents spurious long-range stitching across gaps.
+%			\end{itemize}
+%		\end{column}
+%		\begin{column}{0.55\textwidth}
+%			\centering
+%			% Fig.17 is on page 28 (top). Crop to the top plots.
+%			\paperfig{28}{\linewidth}{1.0cm 14.2cm 1.0cm 2.0cm}
+%			\vspace{-0.5em}
+%			{\scriptsize Fig. 17: Distance and innovation; threshold at 5 m.}
+%		\end{column}
+%	\end{columns}
+%\end{frame}
+
+%\begin{frame}{3D trajectory: what the OPM output looks like}
+%	\begin{columns}[T,onlytextwidth]
+%		\begin{column}{0.42\textwidth}
+%			\small
+%			\begin{itemize}\itemsep0.4em
+%				\item Kalman filtering reduces high-frequency georeferencing noise.
+%				\item Maintains continuity through intermittent detections.
+%				\item Produces a compact movement summary for decision support.
+%			\end{itemize}
+%		\end{column}
+%		\begin{column}{0.58\textwidth}
+%			\centering
+%			% Fig.18 is on page 28 (middle). Crop to the 3D plot region.
+%			\paperfig{28}{\linewidth}{1.0cm 6.0cm 1.0cm 9.4cm}
+%			\vspace{-0.5em}
+%			{\scriptsize Fig. 18: 3D tracked trajectory (meas/pred/filtered).}
+%		\end{column}
+%	\end{columns}
+%\end{frame}
+%
+%
+%\begin{frame}{Case study takeaways: what it proves about Information Fusion}
+%	\small
+%	\begin{itemize}\itemsep0.45em
+%		\item \textbf{OGM/FPM}: reacts strongly when new modalities arrive (large $\Delta(t)$), then stabilizes (convergence).
+%		\item \textbf{Multimodal behavior}: predictions provide structure; observations (especially UAV) refine boundaries and correct local mismatches.
+%		\item \textbf{OPM}: coherent tracking under intermittent detections; consistency enforced at \textbf{5 m} map resolution.
+%	\end{itemize}
+%	
+%	\vspace{0.6em}
+%	\centering
+%	\begin{columns}[T,onlytextwidth]
+%		\begin{column}{0.33\textwidth}
+%			\paperfig{24}{\linewidth}{1.0cm 12.2cm 1.0cm 2.0cm}\\[-0.4em]
+%			{\scriptsize Final FPM (Fig. 12)}
+%		\end{column}
+%		\begin{column}{0.33\textwidth}
+%			\paperfig{25}{\linewidth}{1.0cm 16.0cm 1.0cm 2.0cm}\\[-0.4em]
+%			{\scriptsize Temporal metrics (Fig. 13)}
+%		\end{column}
+%		\begin{column}{0.33\textwidth}
+%			\paperfig{28}{\linewidth}{1.0cm 10.0cm 1.0cm 6.0cm}\\[-0.4em]
+%			{\scriptsize 3D OPM track (Fig. 18)}
+%		\end{column}
+%	\end{columns}
+%\end{frame}
+% ============================================================
+% Wrap-up
+% ============================================================
 \begin{frame}{Key takeaways}
-  \begin{itemize}
-    \item \textbf{Generic platform:} one fusion engine, multiple hazards (floods, wildfires, \dots)
-    \item \textbf{Two operational products:} OGM for hazard status; OPM for dynamic entities
-    \item \textbf{Robust fusion:} log-odds updates for observations + logit pooling for predictions
-    \item \textbf{System-ready:} deployed as web services with APIs and a web app
-    \item \textbf{USE contribution:} PDM-tech-05 (fusion) integrated with UAV acquisition and drone planning
-  \end{itemize}
+	\small
+	\begin{itemize}\itemsep0.6em
+		\item \textbf{Generic platform} for NDM: consistent handling of heterogeneous, asynchronous evidence.
+		\item \textbf{Two operational products:} OGM (Flood/Fire status) and OPM (multi-object tracking).
+		\item \textbf{Robust fusion:} Bayesian log-odds updates for measurements + logit pooling for predictions.
+		\item \textbf{Operationalization:} event-driven services + web app cockpit + NGSI-LD interoperability.
+		\item \textbf{USE loop:} Fusion $\rightarrow$ Drone planning $\rightarrow$ Drone acquisition $\rightarrow$ Fusion.
+	\end{itemize}
 \end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \GRVCclearprojectlogo
 } 
-
+\GRVCsectionframe[assets/grvc_logo.png]{\Large \textbf{Thank you for attending, Questions?}}
 \end{document}
